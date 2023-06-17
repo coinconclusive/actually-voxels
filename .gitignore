@@ -1,0 +1,7 @@
+build
+.ninja_log
+src/gl3w.c
+include/GL
+include/KHR
+.cache
+

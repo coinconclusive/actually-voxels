@@ -1,0 +1,35 @@
+platform = linux
+
+cc = clang -fdiagnostics-color
+cxx = clang++ -fdiagnostics-color
+ld = $cxx
+
+cflags = -Wall -std=c2x -Iinclude
+cxxflags = -Wall -std=c++2b -Iinclude -stdlib=libc++
+libs = -lfmt -lglfw -stdlib=libc++
+debug = -g
+
+rule cc
+  command = $cc -c $in -o $out $cflags -MD -MF $out.d $debug
+  depfile = $out.d
+
+rule cxx
+  command = $cxx -c $in -o $out $cxxflags -MD -MF $out.d $debug
+  depfile = $out.d
+
+rule ld
+  command = $ld $in -o $out $libs $debug
+
+build build/gl3w.c.o: cc src/gl3w.c
+build build/platform/$platform/fs.cc.o: cxx src/platform/$platform/fs.cc
+build build/opengl.cc.o: cxx src/opengl.cc
+build build/main.cc.o: cxx src/main.cc
+build build/headeronly.cc.o: cxx src/headeronly.cc
+build build/cmdbuf.cc.o: cxx src/cmdbuf.cc
+build build/main: ld $
+  build/gl3w.c.o $
+  build/platform/$platform/fs.cc.o $
+  build/opengl.cc.o $
+  build/headeronly.cc.o $
+  build/cmdbuf.cc.o $
+  build/main.cc.o
